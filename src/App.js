@@ -1,25 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+//Components
+import Cards from "./components/Cards/Cards";
+import Chart from "./components/Chart/Chart";
+import CountryPicker from "./components/CountryPicker/CountryPicker";
+
+//Style
+import styles from "./App.module.css";
+
+//API_Call
+import { fetchData } from "./api";
+
+//imageImport
+import covidimage from ".././src/images/covidpng.png";
+
+class App extends React.Component {
+  state = {
+    data: {},
+    country: "",
+  };
+
+  async componentDidMount() {
+    const fetchedData = await fetchData();
+
+    this.setState({ data: fetchedData });
+  }
+
+  handleCountryChange = async (country) => {
+    const fetchedData = await fetchData(country);
+    this.setState({ data: fetchedData, country: country });
+  };
+
+  render() {
+    return (
+      <div className={styles.container}>
+        <img className={styles.image} src={covidimage} alt='covidimage' />
+        <h5 className={styles.title}>Tracker</h5>
+        <Cards data={this.state.data} />
+        <CountryPicker handleCountryChange={this.handleCountryChange} />
+        <Chart data={this.state.data} country={this.state.country} />
+      </div>
+    );
+  }
 }
 
 export default App;
